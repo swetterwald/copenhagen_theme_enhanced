@@ -1,6 +1,23 @@
+{{!--
+  Header personnalisé: on masque certains liens et on affiche selon l'état de connexion.
+  Objectifs:
+  - Toujours afficher le lien vers la communauté.
+  - Cacher le lien "service_catalog" (ne pas l'afficher du tout).
+  - Afficher "Soumettre une demande" (new_request) uniquement si l'utilisateur est connecté.
+  - Afficher "Se connecter" (sign_in) uniquement si l'utilisateur n'est PAS connecté.
+  - Afficher le menu utilisateur (avatar + liens) uniquement si l'utilisateur est connecté.
+
+  Notes pour développeurs juniors:
+  - {{#if signed_in}} ... {{/if}} rend le bloc seulement si l'utilisateur est connecté.
+  - {{#unless signed_in}} ... {{/unless}} rend le bloc si l'utilisateur n'est PAS connecté.
+  - Les helpers {{link}}, {{#link}}...{{/link}} insèrent des URLs vers des pages du Help Center.
+  - Les attributs ARIA et alt sont importants pour l'accessibilité.
+--}}
+
 <a class="skip-navigation" tabindex="1" href="#main-content">{{t 'skip_navigation' }}</a>
 
 <header class="header">
+  {{!-- Zone logo + nom de la marque (optionnel) --}}
   <div class="logo">
     {{#link 'help_center'}}
       <img src="{{settings.logo}}" alt="{{t 'home_page' name=help_center.name}}" />
@@ -10,12 +27,22 @@
     {{/link}}
   </div>
 
+  {{!-- Navigation desktop --}}
   <div class="nav-wrapper-desktop">
     <nav class="user-nav" id="user-nav" aria-label="{{t 'user_navigation'}}">
       <ul class="user-nav-list">
+        {{!-- Lien communauté toujours visible --}}
         <li>{{link 'community'}}</li>
-        <li>{{link 'service_catalog'}}</li>
-        <li>{{link 'new_request' class='submit-a-request'}}</li>
+
+        {{!-- On cache "service_catalog" sur desktop (non rendu) --}}
+        {{!-- (lien volontairement supprimé) --}}
+
+        {{!-- Afficher "Soumettre une demande" seulement si connecté --}}
+        {{#if signed_in}}
+          <li>{{link 'new_request' class='submit-a-request'}}</li>
+        {{/if}}
+
+        {{!-- Si non connecté, afficher "Se connecter" --}}
         {{#unless signed_in}}
           <li>
             {{#link "sign_in" class="sign-in"}}
@@ -25,6 +52,8 @@
         {{/unless}}
       </ul>
     </nav>
+
+    {{!-- Menu utilisateur (avatar + menu) visible uniquement si connecté --}}
     {{#if signed_in}}
       <div class="user-info dropdown">
         <button class="dropdown-toggle" aria-haspopup="true">
@@ -40,7 +69,6 @@
           {{#my_profile role="menuitem"}}{{t 'profile'}}{{/my_profile}}
           {{link "requests" role="menuitem"}}
           {{#link "contributions" role="menuitem"}}{{t "activities"}}{{/link}}
-          {{link "approval_requests" role="menuitem"}}
           {{contact_details role="menuitem"}}
           {{change_password role="menuitem"}}
           <div class="separator" role="separator"></div>
@@ -50,6 +78,7 @@
     {{/if}}
   </div>
 
+  {{!-- Navigation mobile --}}
   <div class="nav-wrapper-mobile">
     <button class="menu-button-mobile" aria-controls="user-nav-mobile" aria-expanded="false" aria-label="{{t 'toggle_navigation'}}">
       {{#if signed_in}}
@@ -59,11 +88,13 @@
         <path fill="none" stroke="currentColor" stroke-linecap="round" d="M1.5 3.5h13m-13 4h13m-13 4h13"/>
       </svg>
     </button>
+
     <nav class="menu-list-mobile" id="user-nav-mobile" aria-expanded="false">
       <ul class="menu-list-mobile-items">
+        {{!-- Si connecté: avatar + nom en tête de menu --}}
         {{#if signed_in}}
           <li class="user-avatar-item item">
-            {{#my_profile class="my-profile"}}
+            {{#my_profile role="menuitem" class="my-profile"}}
               {{user_avatar class="menu-profile-avatar"}}
               <div class="menu-profile-name">
                 <div>{{user_name}}</div>
@@ -71,28 +102,26 @@
               </div>
             {{/my_profile}}
           </li>
-          <li class="item">{{link "requests"}}</li>
-          <li class="item">{{#link "contributions"}}{{t "activities"}}{{/link}}</li>
-          <li class="item">{{link "approval_requests"}}</li>
-          <li class="item">{{contact_details}}</li>
-          <li class="item">{{change_password class='change-password'}}</li>
-          <li class="nav-divider"></li>
         {{else}}
+          {{!-- Si non connecté: lien Se connecter --}}
           <li class="item">
-            {{#link "sign_in"}}
+            {{#link "sign_in" role="menuitem"}}
               {{t 'sign_in'}}
             {{/link}}
           </li>
           <li class="nav-divider"></li>
         {{/if}}
-        <li class="item">{{link 'community'}}</li>
-        <li class="item">{{link 'new_request' class='submit-a-request'}}</li>
-        <li class="item">{{link 'service_catalog'}}</li>
-        <li class="nav-divider"></li>
+
+         {{!-- Lien communauté toujours visible --}}
+        <li class="item">{{link 'community' role="menuitem"}}</li>
+
+        {{!-- On cache également "service_catalog" sur mobile --}}
+
+        {{!-- Liens supplémentaires visibles si connecté --}}
         {{#if signed_in}}
-          <li class="item">
-            {{link "sign_out"}}
-          </li>
+          <li class="item">{{link "requests" role="menuitem"}}</li>
+          <li class="item">{{link 'new_request' role="menuitem" class='submit-a-request'}}</li>
+          <li class="item">{{link "sign_out" role="menuitem"}}</li>
         {{/if}}
       </ul>
     </nav>
