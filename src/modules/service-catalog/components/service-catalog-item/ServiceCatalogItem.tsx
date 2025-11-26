@@ -1,14 +1,14 @@
 import styled from "styled-components";
 import { useItemFormFields } from "../../hooks/useItemFormFields";
-import { ItemRequestForm } from "./ItemRequestForm";
+import { ItemRequestForm, ASSET_TYPE_KEY } from "./ItemRequestForm";
 import type { Organization } from "../../../ticket-fields/data-types/Organization";
 import { useServiceCatalogItem } from "../../hooks/useServiceCatalogItem";
 import { submitServiceItemRequest } from "./submitServiceItemRequest";
 import type { ServiceRequestResponse } from "../../data-types/ServiceRequestResponse";
-import { addFlashNotification } from "../../../shared";
+import { addFlashNotification, notify } from "../../../shared";
 import { useTranslation } from "react-i18next";
-import { useNotify } from "../../../shared/notifications/useNotify";
 import { Anchor } from "@zendeskgarden/react-buttons";
+import type { TicketFieldObject } from "../../../ticket-fields/data-types/TicketFieldObject";
 
 const Container = styled.div`
   display: flex;
@@ -20,6 +20,9 @@ const StyledNotificationLink = styled(Anchor)`
   display: block;
   margin-top: ${(props) => props.theme.space.xxs}px;
 `;
+
+const isAssetTypeField = (field: TicketFieldObject) =>
+  field.relationship_target_type === ASSET_TYPE_KEY;
 
 export interface ServiceCatalogItemProps {
   serviceCatalogItemId: number;
@@ -52,8 +55,6 @@ export function ServiceCatalogItem({
     handleChange,
   } = useItemFormFields(serviceCatalogItem, baseLocale);
   const { t } = useTranslation();
-  const notify = useNotify();
-
   if (error) {
     throw error;
   }
@@ -64,13 +65,26 @@ export function ServiceCatalogItem({
 
   const handleRequestSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const isAssetTypeFieldHidden = formData.get("isAssetTypeHidden") === "true";
+
+    const requestFieldsWithFormData = requestFields.map((field) => {
+      if (isAssetTypeField(field) && isAssetTypeFieldHidden) {
+        return {
+          ...field,
+          value: formData.get(field.name),
+        } as TicketFieldObject;
+      }
+      return field;
+    });
 
     if (!serviceCatalogItem || !associatedLookupField) {
       return;
     }
     const response = await submitServiceItemRequest(
       serviceCatalogItem,
-      requestFields,
+      requestFieldsWithFormData,
       associatedLookupField,
       baseLocale
     );

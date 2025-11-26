@@ -2,13 +2,13 @@ import { useState, useCallback, memo } from "react";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import { Button } from "@zendeskgarden/react-buttons";
-import { Field, Label, Message, Textarea } from "@zendeskgarden/react-forms";
+import { Field, Textarea } from "@zendeskgarden/react-forms";
 import { Avatar } from "@zendeskgarden/react-avatars";
-import { useNotify } from "../../../shared/notifications/useNotify";
 import { submitApprovalDecision } from "../../submitApprovalDecision";
 import type { ApprovalDecision } from "../../submitApprovalDecision";
 import type { ApprovalRequest } from "../../types";
 import { APPROVAL_REQUEST_STATES } from "../../constants";
+import { notify } from "../../../shared";
 
 const PENDING_APPROVAL_STATUS = {
   APPROVED: "APPROVED",
@@ -69,7 +69,6 @@ function ApproverActions({
   assigneeUser,
 }: ApproverActionsProps) {
   const { t } = useTranslation();
-  const notify = useNotify();
   const [comment, setComment] = useState("");
   const [pendingStatus, setPendingStatus] = useState<
     | (typeof PENDING_APPROVAL_STATUS)[keyof typeof PENDING_APPROVAL_STATUS]
@@ -171,7 +170,7 @@ function ApproverActions({
     return (
       <CommentSection>
         <Field>
-          <Label>{fieldLabel}</Label>
+          <Field.Label>{fieldLabel}</Field.Label>
           <TextAreaContainer>
             {shouldShowAvatar && (
               <Avatar>
@@ -190,12 +189,12 @@ function ApproverActions({
                 validation={shouldShowValidationError ? "error" : undefined}
               />
               {shouldShowValidationError && (
-                <Message validation="error">
+                <Field.Message validation="error">
                   {t(
                     "approval-requests.request.approver-actions.denial-reason-validation",
                     "Enter a reason for denial"
                   )}
-                </Message>
+                </Field.Message>
               )}
             </TextAreaAndMessage>
           </TextAreaContainer>

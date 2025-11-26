@@ -2,8 +2,6 @@ import {
   FileUpload,
   Field as GardenField,
   Input,
-  Label,
-  Message,
   FileList,
 } from "@zendeskgarden/react-forms";
 import { useCallback } from "react";
@@ -13,7 +11,7 @@ import type { AttachmentField } from "../../data-types";
 import { FileListItem } from "./FileListItem";
 import type { AttachedFile } from "./useAttachedFiles";
 import { useAttachedFiles } from "./useAttachedFiles";
-import { useNotify } from "../../../shared/notifications/useNotify";
+import { notify } from "../../../shared";
 
 interface AttachmentProps {
   field: AttachmentField;
@@ -56,8 +54,6 @@ export function Attachments({
       value,
     })) ?? []
   );
-
-  const notify = useNotify();
   const { t } = useTranslation();
 
   const uploadFailedTitle = useCallback(
@@ -111,16 +107,13 @@ export function Attachments({
     [t, uploadFailedTitle]
   );
 
-  const notifyError = useCallback(
-    (title: string, errorMessage: string) => {
-      notify({
-        title,
-        message: errorMessage,
-        type: "error",
-      });
-    },
-    [notify]
-  );
+  const notifyError = useCallback((title: string, errorMessage: string) => {
+    notify({
+      title,
+      message: errorMessage,
+      type: "error",
+    });
+  }, []);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -217,8 +210,10 @@ export function Attachments({
 
   return (
     <GardenField>
-      <Label>{label}</Label>
-      {error && <Message validation="error">{error}</Message>}
+      <GardenField.Label>{label}</GardenField.Label>
+      {error && (
+        <GardenField.Message validation="error">{error}</GardenField.Message>
+      )}
       <FileUpload {...getRootProps()} isDragging={isDragActive}>
         {isDragActive ? (
           <span>

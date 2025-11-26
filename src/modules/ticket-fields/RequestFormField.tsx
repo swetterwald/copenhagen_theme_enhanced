@@ -4,6 +4,7 @@ import { CreditCard } from "./fields/CreditCard";
 import { DatePicker } from "./fields/DatePicker";
 import { DropDown } from "./fields/DropDown";
 import { Input } from "./fields/Input";
+import type { LookupFieldProps } from "./fields/LookupField";
 import { LookupField } from "./fields/LookupField";
 import { MultiSelect } from "./fields/MultiSelect";
 import { Tagger } from "./fields/Tagger";
@@ -25,6 +26,8 @@ interface RequestFormFieldProps {
     field: TicketFieldObject,
     value: TicketFieldObject["value"]
   ) => void;
+  buildLookupFieldOptions?: LookupFieldProps["buildLookupFieldOptions"];
+  renderLookupFieldOption?: LookupFieldProps["renderOption"];
 }
 
 export const RequestFormField = ({
@@ -40,6 +43,8 @@ export const RequestFormField = ({
   visibleFields,
   handleDueDateChange,
   handleChange,
+  buildLookupFieldOptions,
+  renderLookupFieldOption,
 }: RequestFormFieldProps) => {
   switch (field.type) {
     case "text":
@@ -140,6 +145,8 @@ export const RequestFormField = ({
           }
           visibleFields={visibleFields}
           onChange={(value) => handleChange(field, value)}
+          buildLookupFieldOptions={buildLookupFieldOptions}
+          renderOption={renderLookupFieldOption}
         />
       );
     default:

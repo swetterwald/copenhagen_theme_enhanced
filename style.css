@@ -1776,6 +1776,7 @@ ul {
   padding: 10px 15px;
   overflow: auto;
   white-space: pre;
+  direction: ltr;
 }
 .article-body blockquote {
   border-left: 1px solid #ddd;
@@ -2245,6 +2246,7 @@ ul {
   padding: 10px 15px;
   overflow: auto;
   white-space: pre;
+  direction: ltr;
 }
 .comment-body blockquote {
   border-left: 1px solid #ddd;
@@ -2812,6 +2814,7 @@ ul {
   padding: 10px 15px;
   overflow: auto;
   white-space: pre;
+  direction: ltr;
 }
 .post-body blockquote {
   border-left: 1px solid #ddd;
@@ -3488,6 +3491,9 @@ ul {
 .request-details dd {
   padding: 0 10px;
   width: 60%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .request-details dd::after {
   content: "\a";
@@ -4822,6 +4828,7 @@ zd-summary-block {
   padding: 10px 15px;
   overflow: auto;
   white-space: pre;
+  direction: ltr;
 }
 .service-catalog-description blockquote {
   border-left: 1px solid #ddd;
